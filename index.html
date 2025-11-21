@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alexander Malakhov | Initializing...</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300&family=JetBrains+Mono:wght@300;400&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #F4F2ED; /* Isabelline */
+            --text-main: #111;
+            --text-muted: #888;
+            --accent: #C8553D;
+            
+            --font-serif: 'Playfair Display', serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; cursor: crosshair; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            font-family: var(--font-mono);
+        }
+
+        /* Шум */
+        .noise {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0.05; pointer-events: none; z-index: 1;
+            background: url("https://grainy-gradients.vercel.app/noise.svg");
+        }
+
+        /* Контейнер */
+        .content {
+            z-index: 2;
+            text-align: center;
+            position: relative;
+            width: 100%;
+            padding: 0 20px;
+        }
+
+        /* Имя */
+        h1 {
+            font-family: var(--font-serif);
+            font-size: clamp(2.5rem, 6vw, 6rem);
+            font-weight: 400;
+            margin: 0;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            opacity: 0; /* Для анимации */
+            transform: translateY(20px);
+        }
+
+        /* Подпись курсивом */
+        h1 span {
+            font-style: italic;
+            color: var(--text-muted);
+            font-family: var(--font-serif);
+        }
+
+        /* Статус бар */
+        .status-container {
+            margin-top: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            opacity: 0;
+        }
+
+        .loader-line {
+            width: 200px;
+            height: 1px;
+            background: rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .loader-progress {
+            position: absolute;
+            top: 0; left: 0;
+            height: 100%;
+            width: 0%;
+            background: var(--accent);
+        }
+
+        .status-text {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+        }
+
+        .dynamic-log {
+            font-size: 10px;
+            color: var(--accent);
+            height: 15px; /* Fixed height to prevent jump */
+        }
+
+        /* Футер (Контакты) */
+        .footer {
+            position: absolute;
+            bottom: 40px;
+            width: 100%;
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-main);
+            z-index: 2;
+            opacity: 0;
+        }
+
+        a {
+            color: var(--text-main);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: 0.3s;
+        }
+        a:hover { border-bottom-color: var(--accent); }
+
+    </style>
+</head>
+<body>
+
+    <div class="noise"></div>
+
+    <div class="content">
+        <h1>Alexander<br><span>Malakhov</span></h1>
+        
+        <div class="status-container">
+            <div class="loader-line">
+                <div class="loader-progress"></div>
+            </div>
+            <div class="status-text">Construction in progress</div>
+            <div class="dynamic-log" id="logText">Initializing core protocols...</div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div style="margin-bottom: 5px;">EST. 2025</div>
+    </div>
+
+    <script>
+        // 1. Анимация появления (Intro)
+        const tl = gsap.timeline();
+
+        tl.to("h1", { opacity: 1, y: 0, duration: 1.5, ease: "power3.out" })
+          .to(".status-container", { opacity: 1, duration: 1 }, "-=0.5")
+          .to(".footer", { opacity: 1, duration: 1 }, "-=0.5");
+
+        // 2. Логика "загрузки" (Progress Bar)
+        // Бесконечная анимация, которая никогда не доходит до 100%, символизируя вечный процесс совершенствования
+        gsap.to(".loader-progress", {
+            width: "92%",
+            duration: 10,
+            ease: "power1.inOut",
+            repeat: -1,
+            yoyo: true
+        });
+
+        // 3. Смена текста в логах (Имитация работы)
+        const logs = [
+            "Structuring entropy...",
+            "Loading typography assets...",
+            "Compiling philosophy...",
+            "Synthesizing layout...",
+            "Calculating whitespace...",
+            "Optimizing aesthetics..."
+        ];
+
+        let logIndex = 0;
+        const logElement = document.getElementById("logText");
+
+        setInterval(() => {
+            // Эффект "печатания" или глитча можно добавить, но простая смена выглядит строже
+            gsap.to(logElement, { opacity: 0, duration: 0.3, onComplete: () => {
+                logIndex = (logIndex + 1) % logs.length;
+                logElement.innerText = logs[logIndex];
+                gsap.to(logElement, { opacity: 1, duration: 0.3 });
+            }});
+        }, 3000); // Меняем статус каждые 3 секунды
+
+    </script>
+</body>
+</html>
