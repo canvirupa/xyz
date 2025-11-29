@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alexander Malakhov | Consciousness & AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Палитра "Интеллектуальный свет" */
+            --bg-color: #fcfbf9; /* Теплый бумажный оттенок */
+            --ink-color: #1a1a1a; /* Мягкий черный */
+            --accent-color: #ea580c; /* Глубокий оранжевый (жженая сиена) - символ жизни */
+            --secondary-text: #6b7280;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--ink-color);
+            font-family: 'Inter', sans-serif; /* Чистый гротеск для контента */
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        /* Canvas для фона */
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.6; /* Легкость узора */
+            pointer-events: none; 
+        }
+
+        /* Контейнер контента */
+        .content-wrapper {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 900px;
+            padding: 4rem;
+            
+            /* Эффект матового стекла, но очень тонкий, светлый */
+            background: rgba(252, 251, 249, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(20, 20, 20, 0.07);
+            box-shadow: 0 40px 60px -20px rgba(0, 0, 0, 0.06);
+            border-radius: 2px; /* Более строгие углы */
+        }
+
+        .name-title {
+            font-family: 'Cinzel', serif; /* Благородный античный шрифт */
+            font-size: 4rem;
+            font-weight: 400;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+            color: var(--ink-color);
+            line-height: 1.1;
+            position: relative;
+            display: inline-block;
+        }
+
+        /* Маленький акцент - точка сознания */
+        .name-title::after {
+            content: '';
+            position: absolute;
+            top: 10px;
+            right: -15px;
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(234, 88, 12, 0.4);
+        }
+
+        .role-descriptor {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.25em;
+            color: var(--secondary-text);
+            margin-top: 1rem;
+            margin-bottom: 3rem;
+            font-weight: 300;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        /* Разделители в виде черточек */
+        .separator {
+            width: 30px;
+            height: 1px;
+            background-color: rgba(0,0,0,0.1);
+        }
+
+        .concept-text {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            font-style: italic;
+            color: var(--ink-color);
+            opacity: 0.8;
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .loader {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .loader-line {
+            width: 1px;
+            height: 40px;
+            background: linear-gradient(to bottom, transparent, var(--ink-color), transparent);
+            animation: scan 2s infinite ease-in-out;
+        }
+
+        .status-text {
+            font-size: 0.75rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--secondary-text);
+            opacity: 0.6;
+        }
+
+        @keyframes scan {
+            0% { transform: scaleY(0.5); opacity: 0.2; }
+            50% { transform: scaleY(1.2); opacity: 1; }
+            100% { transform: scaleY(0.5); opacity: 0.2; }
+        }
+
+        /* Адаптив */
+        @media (max-width: 768px) {
+            .content-wrapper { padding: 2rem; width: 90%; }
+            .name-title { font-size: 2.5rem; }
+            .role-descriptor { 
+                flex-direction: column; 
+                gap: 0.5rem;
+                font-size: 0.8rem;
+            }
+            .separator { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="flowCanvas"></canvas>
+
+    <div class="content-wrapper">
+        <h1 class="name-title">Alexander Malakhov</h1>
+        
+        <div class="role-descriptor">
+            <span>Social Change</span>
+            <div class="separator"></div>
+            <span>Consciousness</span>
+            <div class="separator"></div>
+            <span>Artificial Intelligence</span>
+        </div>
+
+        <p class="concept-text">
+            "Designing the architecture of the future society through the lens of algorithmic perception."
+        </p>
+
+        <div class="loader">
+            <div class="loader-line"></div>
+            <span class="status-text">Web Experience Incoming</span>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * Концепция: Simplex Noise Flow Field
+         * Символизирует невидимые потоки данных и социальных изменений, 
+         * которые формируют ландшафт реальности.
+         */
+        
+        const canvas = document.getElementById('flowCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        let width, height;
+        let particles = [];
+        
+        // Настройки генерации
+        const config = {
+            particleCount: 600,      // Количество линий (потоков)
+            zoom: 0.003,             // Масштаб шума (насколько "крупные" вихри)
+            speed: 0.4,              // Скорость течения
+            lifeTime: 600,           // Длина хвоста
+            colorBase: 'rgba(20, 20, 20, ', // Основа цвета (чернила)
+        };
+
+        // Простая реализация псевдо-шума (замена тяжелой библиотеке SimplexNoise)
+        const noise = {
+            perm: [],
+            grad3: [[1,1,0],[-1,1,0],[1,-1,0],[-1,-1,0],[1,0,1],[-1,0,1],[1,0,-1],[-1,0,-1],[0,1,1],[0,-1,1],[0,1,-1],[0,-1,-1]],
+            seed: function(seed) {
+                if(seed > 0 && seed < 1) seed *= 65536;
+                seed = Math.floor(seed);
+                if(seed < 256) seed |= seed << 8;
+                for(let i = 0; i < 256; i++) {
+                    let v;
+                    if (i & 1) v = this.grad3[i & 12]; // Используем упрощенную выборку
+                    this.perm[i] = this.perm[i + 256] = Math.floor(Math.random() * 256);
+                }
+            },
+            perlin2: function(x, y) {
+                // Очень упрощенная аппроксимация потока для легкости кода
+                // Возвращает угол в радианах
+                return Math.sin(x) * Math.cos(y) * Math.PI * 2; 
+            }
+        };
+        
+        // Более качественная функция шума (самописная для красоты линий)
+        function pseudoNoise(x, y, t) {
+            return Math.sin(x * config.zoom + t * 0.1) * Math.cos(y * config.zoom + t * 0.1) * Math.PI * 2 
+                   + Math.sin(x * config.zoom * 2) * 0.5;
+        }
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.life = Math.random() * config.lifeTime;
+                this.age = 0;
+                // Случайная толщина для органичности
+                this.size = Math.random() * 1.5 + 0.5; 
+            }
+
+            update(time) {
+                this.age++;
+                if (this.age > this.life) {
+                    this.reset();
+                }
+
+                // Вычисляем угол движения на основе координат (Поле векторов)
+                const angle = pseudoNoise(this.x, this.y, time);
+                
+                this.x += Math.cos(angle) * config.speed;
+                this.y += Math.sin(angle) * config.speed;
+
+                // Если вышли за границы - сброс
+                if (this.x < 0 || this.x > width || this.y < 0 || this.y > height) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                // Прозрачность зависит от возраста частицы (smooth fade in/out)
+                const alpha = Math.sin((this.age / this.life) * Math.PI) * 0.15;
+                
+                ctx.fillStyle = config.colorBase + alpha + ')';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            particles = [];
+            for (let i = 0; i < config.particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        let time = 0;
+        function animate() {
+            // Оставляем шлейф (эффект рисования тушью)
+            // Вместо полной очистки, рисуем полупрозрачный фон
+            // Это создает красивые длинные линии
+            /* Но для чистоты стиля "Бумага" лучше рисовать точки */
+            
+            ctx.clearRect(0, 0, width, height); // Чистый кадр для минимализма
+
+            time += 0.005; // Время течет медленно
+
+            particles.forEach(p => {
+                p.update(time);
+                p.draw();
+            });
+            
+            // Если хочется шлейфы (линии): раскомментируйте это, а clearRect выше уберите
+            // ctx.fillStyle = 'rgba(252, 251, 249, 0.05)';
+            // ctx.fillRect(0,0,width,height);
+
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+        animate();
+    </script>
+</body>
+</html>
